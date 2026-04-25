@@ -23,3 +23,23 @@ env/
 
 # Static
 staticfiles/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env*
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.DS_Store
+
+# Python common
+*.pyo
+*.pyd
+.Python
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
