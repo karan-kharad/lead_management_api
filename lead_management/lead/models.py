@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 # Create your models here.
 class Lead(models.Model):
@@ -18,7 +20,7 @@ class Lead(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey('CustomUser', on_delete=models.SET_NULL, null=True, related_name='leads_created')
     def __str__(self):
-        return f"{self.first_name}{self.last_name}"
+        return f"{self.first_name} {self.last_name}"
     
 
 class CustomUser(AbstractUser):
@@ -33,6 +35,7 @@ class CustomUser(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+    
 
     def is_admin(self):
         return self.role == 'admin'
@@ -41,4 +44,25 @@ class CustomUser(AbstractUser):
         return self.role == 'sales'
 
     def __str__(self):
-        return self.email
+        return f"{self.username}-{self.role}"
+    
+# Auto create user Profile when a new user is created
+
+class Profile(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='profile')
+    bio = models.TextField(blank=True)
+    # add more fields if needed
+
+    def __str__(self):
+        return self.user.email
+
+@receiver(post_save, sender=CustomUser)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)   # ✅ create profile
+
+
+@receiver(post_save, sender=CustomUser)
+def save_user_profile(sender, instance, **kwargs):
+    if hasattr(instance, 'profile'):
+        instance.profile.save()
