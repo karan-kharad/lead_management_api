@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+let API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+if (API_BASE_URL && !API_BASE_URL.endsWith('/api') && !API_BASE_URL.endsWith('/api/')) {
+    // If the URL ends with a slash, append 'api', else append '/api'
+    API_BASE_URL = API_BASE_URL.endsWith('/') ? API_BASE_URL + 'api' : API_BASE_URL + '/api';
+}
 
 const api = axios.create({
   baseURL: API_BASE_URL,
