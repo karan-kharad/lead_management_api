@@ -124,14 +124,14 @@ const Register = () => {
       await api.post('/auth/register/', formData);
       navigate('/login');
     } catch (err) {
-      if (err.response?.data) {
-        // Extract DRF field errors (e.g. {"username": ["..."], "password": ["..."]})
-        const data = err.response.data;
-        if (data.detail) {
-          setError(data.detail);
+      const errorData = err.response?.data;
+      alert("SERVER ERROR DETAILS:\n" + JSON.stringify(errorData, null, 2));
+      
+      if (errorData) {
+        if (errorData.detail) {
+          setError(errorData.detail);
         } else {
-          // Join all field error messages together
-          const messages = Object.values(data).flat().join(' ');
+          const messages = Object.values(errorData).flat().join(' ');
           setError(messages || 'Registration failed. Check your details.');
         }
       } else {
